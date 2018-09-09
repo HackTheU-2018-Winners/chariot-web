@@ -1,0 +1,24 @@
+{
+  "name": "chariot-web",
+  "homepage": "https://github.com/HackTheU-2018-Winners/chariot-web",
+  "authors": [
+    "HackTheU 2018 Winners"
+  ],
+  "description": "",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0",
+    "polymerfire": "merlinnot/polymerfire#fix-issue-333",
+    "app-route": "PolymerElements/app-route#^2.1.2",
+    "iron-pages": "PolymerElements/iron-pages#^2.1.1"
+  }
+}

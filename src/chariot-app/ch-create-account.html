@@ -1,0 +1,57 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+
+<dom-module id="ch-create-account">
+	<template>
+		<style>
+			:host {
+				display: block;
+				background-color: white;
+			}
+		</style>
+
+		<firebase-auth id="auth" user="{{user}}" provider="google" app-name="chariot" on-error="_handleError"></firebase-auth>
+
+		<div class="container">
+			<h1>Sign up</h1>
+			<input id="name-field" type="text" placeholder="Name">
+			<button id="googleButton" on-click="_loginPressed">log in with google</button>
+		</div>
+	</template>
+
+	<script>
+		const CcCreateAccount = class extends Polymer.FirestoreMixin(Polymer.Element) {
+			static get is() { return "ch-create-account" }
+
+			static get properties() {
+				return {
+					user: {
+						type: Object,
+						notify: true
+					}
+				}
+			}
+
+			_loginPressed() {
+				let name = this.$["name-field"].value
+
+				this.$.auth.signInWithPopup()
+					.then(([user]) => {
+						console.log("AAA")
+						this.db.collection("Charities").doc("Big Boy").set({ Name: name })
+						console.log(this.db.collection("Charities"))
+					})
+					// .catch((error) => {
+					// 	console.log("fail", error)
+					// })
+			}
+
+			_handleError() {
+				console.log("bad life")
+			}
+		}
+
+		window.customElements.define(CcCreateAccount.is, CcCreateAccount)
+	</script>
+</dom-module>

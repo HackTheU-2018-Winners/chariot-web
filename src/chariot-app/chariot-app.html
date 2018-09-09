@@ -1,0 +1,111 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-firestore-mixin.html">
+<link rel="import" href="ch-create-account.html">
+<link rel="import" href="ch-home.html">
+
+<dom-module id="chariot-app">
+	<template>
+		<style>
+			:host {
+				display: block;
+				height: 100%;
+				--app-color-text: #292f33;
+				--app-color-texthint: #acb5b3;
+				--app-color-textgray: #939b99;
+				--app-color-primary: #f97b66;
+				--app-button: {
+					background-color: var(--app-color-primary);
+					border-radius: 30.5px;
+					color: white;
+					font-size: 16px;
+					text-transform: none;
+					--paper-button: {
+						font-weight: normal;
+					};
+				};
+				--primary-color: var(--app-color-primary);
+				--secondary-text-color: var(--app-color-texthint);
+			}
+
+			iron-pages, iron-pages > * {
+				height: 100%;
+			}
+		</style>
+
+		<h2>Hello [[prop1]]!</h2>
+
+		<firebase-app
+			name="chariot"
+			api-key="AIzaSyBN-FxFn9DNnlt88vOp3ICaN9fFP3CsVaM"
+			auth-domain="chariot-app-2018.firebaseapp.com"
+			database-url="https://chariot-app-2018.firebaseio.com"
+			project-id="chariot-app-2018"
+			storage-bucket="chariot-app-2018.appspot.com"
+			messaging-sender-id="523490277407">
+		</firebase-app>
+
+		<!-- <firebase-auth id="auth" user="{{user}}" provider="google" app-name="chariot"></firebase-auth> -->
+
+		<app-location route="{{route}}"></app-location>
+
+		<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}" query-params="{{queryParams}}"></app-route>
+
+		<iron-pages selected="[[routeData.page]]" attr-for-selected="name" fallback-selection="404" role="main" on-iron-select="_pageSelected">
+			<ch-home name="" user="{{user}}"></ch-home>
+
+			<div name="__">
+				<p>Processing your request... ([[authStatusText]])</p>
+			</div>
+
+			<div name="account">
+				<app-route route="{{subroute}}" pattern="/:subpage" data="{{_accountRouteData}}"></app-route>
+
+				<iron-pages selected="[[_accountRouteData.subpage]]" attr-for-selected="name">
+					<!-- <ch-login name="login"></ch-login> -->
+					<ch-create-account name="create"></ch-create-account>
+				</iron-pages>
+			</div>
+
+			<div name="404">404</div>
+		</iron-pages>
+	</template>
+
+	<script>
+		/**
+		 * @customElement
+		 * @polymer
+		 */
+		class ChariotApp extends Polymer.FirestoreMixin(Polymer.Element) {
+			static get is() { return "chariot-app" }
+
+			static get properties() {
+				return {}
+			}
+
+			_pageSelected(event, data) {
+				if (data.item.getAttribute("name") == "__") {
+					this._handleAuthEvent(this.queryParams.mode, this.queryParams.oobCode)
+				}
+			}
+
+			_handleAuthEvent(mode, oobCode) {
+				return Promise.resolve()
+					.then(() => firebase.auth().applyActionCode(oobCode))
+					.then(() => {
+						this.authStatusText = "Completed action successfully"
+					})
+					.catch((error) => {
+						this.authStatusText = `Failure: ${error.message}`
+					})
+			}
+		}
+
+		window.customElements.define(ChariotApp.is, ChariotApp);
+	</script>
+</dom-module>

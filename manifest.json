@@ -1,0 +1,6 @@
+{
+  "name": "chariot",
+  "short_name": "chariot",
+  "start_url": "/",
+  "display": "standalone"
+}
